@@ -1,0 +1,60 @@
+modelos usados en el proyecto integrador:
+    NB
+    catboost
+    gridsearch
+    xgboost
+    regresion logistica
+
+curva ROC AUC
+
+y_probs_nb = modelo_NB.predict_proba(X_test)
+y_probs_LG = lg_final.predict_proba(X_test)
+y_probs_KNN = KNN_final.predict_proba(X_test)
+y_probs_CAT = modelo_catboost.predict_proba(test_set)
+
+#Curvas ROC
+##NB
+fpr_nb,tpr_nb,thr_nb = roc_curve(y_test, y_probs_nb[:,1])
+##LG
+fpr_lg,tpr_lg,thr_lg = roc_curve(y_test, y_probs_LG[:,1])
+##KNN
+fpr_knn,tpr_knn,thr_knn = roc_curve(y_test, y_probs_KNN[:,1])
+##CatBoost
+fpr_cat,tpr_cat,thr_cat = roc_curve(test_label, y_probs_CAT[:,1])
+
+#Rango de los ejes
+plt.axis([0, 1.01, 0, 1.01])
+
+#Etiquetas de los ejes
+plt.xlabel('1 - Specificty')
+plt.ylabel('TPR / Sensitivity')
+
+#Titulo
+plt.title('Curvas ROC')
+
+#Plot de las curvas
+plt.plot(fpr_nb,tpr_nb)
+plt.plot(fpr_lg,tpr_lg)
+plt.plot(fpr_knn,tpr_knn)
+plt.plot(fpr_cat,tpr_cat)
+
+#Recta
+plt.plot(np.arange(0,1, step =0.01), np.arange(0,1, step =0.01))
+
+#Leyenda
+plt.legend(['NB','LG','KNN','CatBoost'])
+plt.show() 
+
+print('AUC NB=', auc(fpr_nb, tpr_nb))
+print('AUC LG=', auc(fpr_lg, tpr_lg))
+print('AUC KNN=', auc(fpr_knn, tpr_knn))
+print('AUC CatBoost=', auc(fpr_cat, tpr_cat))
+
+AUC_NB=auc(fpr_nb, tpr_nb)
+AUC_LG=auc(fpr_lg, tpr_lg)
+AUC_KNN=auc(fpr_knn, tpr_knn)
+AUC_CatBoost=auc(fpr_cat, tpr_cat)
+
+#Agregamos los resultados al dataframe
+
+resultados['AUC'] = [AUC_NB, AUC_LG, AUC_KNN, AUC_CatBoost]
